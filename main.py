@@ -1,15 +1,19 @@
-from typing import Set
+from typing import Set, FrozenSet
+
+
+def new_frozenset(*args):
+    return frozenset(args)
 
 
 class Fact:
 
     def __init__(self, name: str, value: str, state: bool):
-        self.value = value
-        self.name = name
-        self.state = state
+        self.VALUE = value
+        self.NAME = name
+        self.STATE = state
 
     def __repr__(self):
-        return f"{self.name} est {self.value} : {self.state}"
+        return f"{self.NAME} est {self.VALUE} : {self.STATE}"
 
     def __hash__(self):
         """Pour pouvoir stocker un Fact dans un set"""
@@ -20,14 +24,14 @@ class Fact:
         return hash(self) == hash(other)
 
     def get_contrary(self) -> "Fact":
-        return Fact(self.name, self.value, not self.state)
+        return Fact(self.NAME, self.VALUE, not self.STATE)
 
 
 class Rule:
 
-    def __init__(self, majors: Set[Fact], conclusions: Set[Fact]):
-        self.conclusions = conclusions
-        self.majors = majors
+    def __init__(self, majors: FrozenSet[Fact], conclusions: FrozenSet[Fact]):
+        self.CONCLUSIONS = conclusions
+        self.MAJORS = majors
 
 
 class Engine:
@@ -38,8 +42,8 @@ class Engine:
 
     def sylogism(self):
         for rule in self.rules:
-            if self.facts.issuperset(rule.majors):
-                self.facts.update(rule.conclusions)
+            if self.facts.issuperset(rule.MAJORS):
+                self.facts.update(rule.CONCLUSIONS)
 
     def check_contraries(self):
         for fact in self.facts:
@@ -54,8 +58,12 @@ FACTS = {
 
 RULES = {
     Rule(
-        {Fact("la couleur des cheveux", "noire", True)},
-        {Fact("la race", "germanique", False)}
+        majors=new_frozenset(
+            Fact("la couleur des cheveux", "noire", True)
+        ),
+        conclusions=new_frozenset(
+            Fact("la race", "germanique", False)
+        )
     )
 }
 

@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from main import Fact
+from main import Fact, Rule, FACTS, new_frozenset
 
 
 class TestFact(TestCase):
@@ -9,9 +9,12 @@ class TestFact(TestCase):
         f1 = Fact("a", "b", True)
         f2 = Fact(name="a", value="b", state=True)
         self.assertEqual(
-            (f1.name, f1.value, f1.state),
-            (f2.name, f2.value, f2.state)
+            (f1.NAME, f1.VALUE, f1.STATE),
+            (f2.NAME, f2.VALUE, f2.STATE)
         )
+        self.assertIsInstance(f1.NAME, str)
+        self.assertIsInstance(f1.VALUE, str)
+        self.assertIsInstance(f1.STATE, bool)
 
     def test_repr(self):
         f1 = Fact("a", "b", True)
