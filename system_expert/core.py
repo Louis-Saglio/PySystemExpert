@@ -29,6 +29,9 @@ class Rule:
         self.CONCLUSIONS = conclusions
         self.MAJORS = majors
 
+    def __repr__(self):
+        return f"Majors : {self.MAJORS}\tConclusions : {self.CONCLUSIONS}"
+
 
 class Engine:
 
@@ -36,11 +39,29 @@ class Engine:
         self.facts = facts
         self.rules = rules
 
-    def make_syllogism(self):
+    def make_syllogism(self) -> Set[Rule]:
+        """Si les majors d'une règle sont contenu dans self.facts, y ajoute ses conclusions
+        return les règles matchées
+        """
+        matched_rules = set()
         for rule in self.rules:
             if self.facts.issuperset(rule.MAJORS):
+                matched_rules.add(rule)
                 self.facts.update(rule.CONCLUSIONS)
+        return matched_rules
 
     def check_contrary(self):
         for fact in self.facts:
             assert fact.get_contrary() not in self.facts, f"'{fact}' et son contraire sont dans la base de faits"
+
+    def _remove_from_rules(self, rules):
+        for rule in rules:
+            self.rules.discard(rule)
+
+    def process(self):
+        """Applique les règles logiques à self.facts jusqu'à ce qu'elles ne le modifient plus"""
+        ended = False
+        while not ended:
+            matched_rules = self.make_syllogism()
+            self._remove_from_rules(matched_rules)
+            ended = not bool(matched_rules)

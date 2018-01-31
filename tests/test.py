@@ -69,3 +69,9 @@ class TestEngine(unittest.TestCase):
         engine = se.Engine(data.FACTS, data.RULES)
         engine.facts.add(se.Fact("la race", "germanique", False))
         self.assertRaises(AssertionError, engine.check_contrary)
+
+    def test_process(self):
+        engine = se.Engine(data.PROCESS_FACTS, data.PROCESS_RULES)
+        engine.make_syllogism()
+        engine.process()
+        self.assertIn(se.Fact("marche", "haha", True), engine.facts)

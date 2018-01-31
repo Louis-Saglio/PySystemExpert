@@ -17,3 +17,25 @@ RULES = {
         )
     )
 }
+
+
+PROCESS_FACTS = {Fact("test", "t_value", True)}
+
+PROCESS_RULES = {
+    Rule(
+        majors=new_frozenset(
+            Fact("foo", "f_value", True)
+        ),
+        conclusions=new_frozenset(
+            Fact("marche", "haha", True)
+        )
+    ),
+    Rule(
+        majors=new_frozenset(
+            Fact("test", "t_value", True)
+        ),
+        conclusions=new_frozenset(
+            Fact("foo", "f_value", True)
+        )
+    )
+}
