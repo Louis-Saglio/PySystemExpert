@@ -37,6 +37,18 @@ class TestFact(TestCase):
         self.assertEqual(f1.get_contrary(), f2)
 
 
+class TestRule(TestCase):
+
+    def test_init(self):
+        rule = Rule(frozenset(FACTS), new_frozenset(Fact("a", "b", True)))
+        self.assertIsInstance(rule.CONCLUSIONS, frozenset)
+        self.assertIsInstance(rule.MAJORS, frozenset)
+        for conclusion in rule.CONCLUSIONS:
+            self.assertIsInstance(conclusion, Fact)
+        for major in rule.MAJORS:
+            self.assertIsInstance(major, Fact)
+
+
 class TestEngine(TestCase):
 
     def test_sylogism(self):
