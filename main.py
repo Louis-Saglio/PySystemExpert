@@ -1,3 +1,6 @@
+from typing import Set
+
+
 class Fact:
 
     def __init__(self, name: str, value: str, state: bool):
@@ -9,25 +12,27 @@ class Fact:
         return f"{self.name} est {self.value} : {self.state}"
 
     def __hash__(self):
+        """Pour pouvoir stocker un Fact dans un set"""
         return int(''.join(str(ord(l)) for l in self.__repr__()))
 
     def __eq__(self, other: "Fact"):
+        """Fact('abc', 'def', True) == Fact('abc', 'def', True)"""
         return hash(self) == hash(other)
 
-    def get_contrary(self):
+    def get_contrary(self) -> "Fact":
         return Fact(self.name, self.value, not self.state)
 
 
 class Rule:
 
-    def __init__(self, majors: set, conclusions: set):
+    def __init__(self, majors: Set[Fact], conclusions: Set[Fact]):
         self.conclusions = conclusions
         self.majors = majors
 
 
 class Engine:
 
-    def __init__(self, facts, rules):
+    def __init__(self, facts: Set[Fact], rules: Set[Rule]):
         self.facts = facts
         self.rules = rules
 
@@ -55,9 +60,9 @@ RULES = {
 }
 
 
-engine = Engine(FACTS, RULES)
-engine.sylogism()
-engine.check_contraries()
+if __name__ == '__main__':
+    engine = Engine(FACTS, RULES)
+    engine.sylogism()
+    # engine.check_contraries()
 
-
-print(engine.facts)
+    print(engine.facts)
