@@ -36,11 +36,11 @@ class Engine:
         self.facts = facts
         self.rules = rules
 
-    def sylogism(self):
+    def make_syllogism(self):
         for rule in self.rules:
             if self.facts.issuperset(rule.MAJORS):
                 self.facts.update(rule.CONCLUSIONS)
 
-    def check_contraries(self):
+    def check_contrary(self):
         for fact in self.facts:
             assert fact.get_contrary() not in self.facts, f"'{fact}' et son contraire sont dans la base de faits"

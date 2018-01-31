@@ -60,12 +60,12 @@ class TestEngine(unittest.TestCase):
         for rule in engine.rules:
             self.assertIsInstance(rule, se.Rule)
 
-    def test_sylogism(self):
-        pass
+    def test_make_syllogism(self):
+        engine = se.Engine(data.FACTS, data.RULES)
+        engine.make_syllogism()
+        self.assertIn(se.Fact("la race", "germanique", False), engine.facts)
 
-    def test_check_contraries(self):
-        pass
-
-
-if __name__ == '__main__':
-    unittest.main()
+    def test_check_contrary(self):
+        engine = se.Engine(data.FACTS, data.RULES)
+        engine.facts.add(se.Fact("la race", "germanique", False))
+        self.assertRaises(AssertionError, engine.check_contrary)
