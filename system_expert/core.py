@@ -1,10 +1,6 @@
 from typing import Set, FrozenSet
 
 
-def new_frozenset(*args):
-    return frozenset(args)
-
-
 class Fact:
 
     def __init__(self, name: str, value: str, state: bool):
@@ -48,29 +44,3 @@ class Engine:
     def check_contraries(self):
         for fact in self.facts:
             assert fact.get_contrary() not in self.facts, f"'{fact}' et son contraire sont dans la base de faits"
-
-
-FACTS = {
-    Fact("la couleur des cheveux", "noire", True),
-    Fact("la race", "germanique", True)
-}
-
-
-RULES = {
-    Rule(
-        majors=new_frozenset(
-            Fact("la couleur des cheveux", "noire", True)
-        ),
-        conclusions=new_frozenset(
-            Fact("la race", "germanique", False)
-        )
-    )
-}
-
-
-if __name__ == '__main__':
-    engine = Engine(FACTS, RULES)
-    engine.sylogism()
-    # engine.check_contraries()
-
-    print(engine.facts)
