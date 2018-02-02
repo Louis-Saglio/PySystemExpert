@@ -34,12 +34,13 @@ class Rule:
 
 
 class Engine:
+    # todo: facts et rules public ?
 
     def __init__(self, facts: Set[Fact], rules: Set[Rule]):
         self.facts = facts
         self.rules = rules
 
-    def make_syllogism(self) -> Set[Rule]:
+    def _make_syllogism(self) -> Set[Rule]:
         """Si les majors d'une règle sont contenu dans self.facts, y ajoute ses conclusions
         return les règles matchées
         """
@@ -62,6 +63,6 @@ class Engine:
         """Applique les règles logiques à self.facts jusqu'à ce qu'elles ne le modifient plus"""
         ended = False
         while not ended:
-            matched_rules = self.make_syllogism()
+            matched_rules = self._make_syllogism()
             self._remove_from_rules(matched_rules)
             ended = not bool(matched_rules)
