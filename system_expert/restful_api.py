@@ -5,6 +5,7 @@ import falcon
 from falcon import Response, Request
 
 from core import Engine, Fact
+from exceptions import BadFactField
 from helpers import status
 
 engine = Engine(set(), set())
@@ -18,9 +19,13 @@ class FactResource:
             # todo state is bool
             raw_json = request.stream.read()
             new_fact = Fact(**json.loads(raw_json, encoding='utf-8'))
+            new_fact.check_fields()
             engine.facts.add(new_fact)
             response.media = {"message": "Fact sucessfully created", "fact_id": hash(new_fact)}
             response.status = status(HTTPStatus.CREATED)
+        except BadFactField as e:
+            response.media = {"message": str(e)}
+            response.status = status(HTTPStatus.BAD_REQUEST)
         except TypeError:
             response.media = {"message": "Bad post variable name"}
             response.status = status(HTTPStatus.BAD_REQUEST)

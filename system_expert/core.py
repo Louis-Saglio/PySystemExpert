@@ -1,9 +1,11 @@
-from typing import Set, FrozenSet
+from typing import Set, FrozenSet, Any
+
+from exceptions import BadFactField
 
 
 class Fact:
 
-    def __init__(self, name: str, value: str, state: bool):
+    def __init__(self, name: str, value: Any, state: bool):
         self.VALUE = value
         self.NAME = name
         self.STATE = state
@@ -21,6 +23,12 @@ class Fact:
 
     def get_contrary(self) -> "Fact":
         return Fact(self.NAME, self.VALUE, not self.STATE)
+
+    def check_fields(self):
+        if not isinstance(self.NAME, str):
+            raise BadFactField(f"self.NAME class must be str. Is {self.NAME.__class__}")
+        if not isinstance(self.STATE, bool):
+            raise BadFactField(f"self.STATE class must be str. Is {self.STATE.__class__}")
 
 
 class Rule:
