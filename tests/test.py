@@ -99,7 +99,7 @@ class TestFactRessource(unittest.TestCase):
 
     def test_on_post_bad_json(self):
         response = requests.post('http://127.0.0.1:8800/fact', data={"name": "sexe", "value": "femme", "state": True})
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 415)
 
     def test_on_post_bad_name(self):
         response = requests.post('http://127.0.0.1:8800/fact', json={"name": "sexe", "value": "femme", "foo": True})
