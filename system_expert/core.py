@@ -26,9 +26,9 @@ class Fact:
 
     def check_fields(self):
         if not isinstance(self.NAME, str):
-            raise BadFactField(f"self.NAME class must be str. Is {self.NAME.__class__}")
+            raise BadFactField(f"self.NAME class must be str, not {self.NAME.__class__.__name__}")
         if not isinstance(self.STATE, bool):
-            raise BadFactField(f"self.STATE class must be str. Is {self.STATE.__class__}")
+            raise BadFactField(f"self.STATE class must be bool, not {self.STATE.__class__.__name__}")
 
 
 class Rule:
