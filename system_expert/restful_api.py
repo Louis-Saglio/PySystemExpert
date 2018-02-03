@@ -15,16 +15,23 @@ class FactResource:
     @staticmethod
     def on_post(request: Request, response: Response):
         try:
+            # todo state is bool
             raw_json = request.stream.read()
-            engine.facts.add(Fact(**json.loads(raw_json, encoding='utf-8')))
-            response.media = {"message": "Fact sucessfully created"}
+            new_fact = Fact(**json.loads(raw_json, encoding='utf-8'))
+            engine.facts.add(new_fact)
+            response.media = {"message": "Fact sucessfully created", "fact_id": hash(new_fact)}
             response.status = status(HTTPStatus.CREATED)
         except TypeError:
             response.media = {"message": "Bad post variable name"}
             response.status = status(HTTPStatus.BAD_REQUEST)
+        except json.decoder.JSONDecodeError:
+            response.media = {"message": f"Post data do not match JSON format. Received : {raw_json}"}
+            response.status = status(HTTPStatus.BAD_REQUEST)
         except Exception as e:
-            response.media = {"message": f"Unmanaged error : {e}"}
+            response.media = {"message": f"Unmanaged error : {e}. Please fix it here : "
+                                         f"https://github.com/Louis-Saglio/PySystemExpert"}
             response.status = status(HTTPStatus.INTERNAL_SERVER_ERROR)
+            raise e
 
 
 api = falcon.API()
