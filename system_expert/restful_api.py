@@ -30,8 +30,23 @@ class FactResource:
             raise e
 
 
+class FactsResource:
+
+    @staticmethod
+    def on_get(request: Request, response: Response):
+        """Process facts according to rules and list facts"""
+        try:
+            engine.process()
+            response.media = {
+                "facts": [{"name": fact.NAME, "value": fact.VALUE, "state": fact.STATE} for fact in engine.facts]
+            }
+        except Exception as e:
+            raise e
+
+
 api = falcon.API()
 api.add_route('/fact', FactResource())
+api.add_route('/facts', FactsResource())
 
 if __name__ == '__main__':
     from wsgiref import simple_server

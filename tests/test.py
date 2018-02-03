@@ -1,11 +1,12 @@
 import json
 import threading
 import unittest
+from wsgiref import simple_server
 
 import requests
 
-import data
 import context
+import data
 
 
 class TestFact(unittest.TestCase):
@@ -84,34 +85,67 @@ class TestEngine(unittest.TestCase):
 
 class TestFactRessource(unittest.TestCase):
 
-    from wsgiref import simple_server
-    server = simple_server.make_server('127.0.0.1', 8800, context.api_rest.api)
-    thread = threading.Thread(target=server.serve_forever)
-
     @classmethod
     def setUpClass(cls):
+        # todo: factorise
+        ip, port = '127.0.0.1', 8800
+        cls.url = f"http://{ip}:{port}/fact"
+        cls.server = simple_server.make_server(ip, port, context.api_rest.api)
+        cls.thread = threading.Thread(target=cls.server.serve_forever)
         cls.thread.start()
 
     def test_on_post_success(self):
-        response = requests.post('http://127.0.0.1:8800/fact', json={"name": "sexe", "value": "femme", "state": True})
+        response = requests.post(self.url, json={"name": "sexe", "value": "femme", "state": True})
         self.assertEqual(json.loads(response.content, encoding='utf-8')["fact_id"], 456573380057838825)
         self.assertEqual(response.status_code, 201)
 
     def test_on_post_bad_json(self):
-        response = requests.post('http://127.0.0.1:8800/fact', data={"name": "sexe", "value": "femme", "state": True})
+        response = requests.post(self.url, data={"name": "sexe", "value": "femme", "state": True})
         self.assertEqual(response.status_code, 415)
 
     def test_on_post_bad_name(self):
-        response = requests.post('http://127.0.0.1:8800/fact', json={"name": "sexe", "value": "femme", "foo": True})
+        response = requests.post(self.url, json={"name": "sexe", "value": "femme", "foo": True})
         self.assertEqual(response.status_code, 400)
 
     def test_on_post_state_not_bool(self):
-        response = requests.post('http://127.0.0.1:8800/fact', json={"name": "sexe", "value": "femme", "state": "True"})
+        response = requests.post(self.url, json={"name": "sexe", "value": "femme", "state": "True"})
         self.assertEqual(response.status_code, 400)
 
     def test_on_post_name_not_str(self):
-        response = requests.post('http://127.0.0.1:8800/fact', json={"name": 5, "value": "femme", "state": True})
+        response = requests.post(self.url, json={"name": 5, "value": "femme", "state": True})
         self.assertEqual(response.status_code, 400)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.server.shutdown()
+        cls.thread.join()
+
+
+class TestFactsResource(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        ip, port = '127.0.0.1', 8801
+        cls.url = f"http://{ip}:{port}/facts"
+        cls.url_fact = f"http://{ip}:{port}/fact"
+        cls.server = simple_server.make_server(ip, port, context.api_rest.api)
+        cls.thread = threading.Thread(target=cls.server.serve_forever)
+        cls.thread.start()
+
+    def test_on_get_success(self):
+        requests.post(self.url_fact, json={"name": "sexe", "value": "femme", "state": True})
+        requests.post(self.url_fact, json={"name": "age", "value": "18", "state": True})
+        response = requests.get(self.url)
+        # todo: order in self.assertEqual parameters
+        self.assertEqual(
+            {
+                "facts": [
+                    {"name": "sexe", "value": "femme", "state": True},
+                    {'name': 'age', 'state': True, 'value': '18'}
+                ]
+            },
+            json.loads(response.content, encoding='utf-8')
+        )
 
     @classmethod
     def tearDownClass(cls):
