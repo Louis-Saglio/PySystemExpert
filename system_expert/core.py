@@ -40,6 +40,16 @@ class Rule:
     def __repr__(self):
         return f"Majors : {self.MAJORS}\tConclusions : {self.CONCLUSIONS}"
 
+    def __hash__(self):
+        # todo: redefine act hash
+        # todo: hash collision ? hash(Rule) ?
+        # todo compute hash in init ? || Value change instance simule change ?
+        # todo: negative id
+        return hash((hash(self.MAJORS), hash(self.CONCLUSIONS), hash(Rule)))
+
+    def __eq__(self, other):
+        return hash(self) == hash(other)
+
 
 class Engine:
     # todo: facts et rules public ?
