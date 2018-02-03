@@ -83,16 +83,31 @@ class TestEngine(unittest.TestCase):
         self.assertIn(context.Fact("marche", "haha", True), engine.facts)
 
 
-class TestFactRessource(unittest.TestCase):
+class TestRestApiCase(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        # todo: factorise
-        ip, port = '127.0.0.1', 8800
-        cls.url = f"http://{ip}:{port}/fact"
-        cls.server = simple_server.make_server(ip, port, context.api_rest.api)
-        cls.thread = threading.Thread(target=cls.server.serve_forever)
-        cls.thread.start()
+    port_gen = (i for i in range(8800, 8900))
+
+    def setUp(self):
+        ip, port = '127.0.0.1', next(self.port_gen)
+        self.http_host = f'http://{ip}:{port}'
+        self.server = simple_server.make_server(
+            ip, port, context.api_rest.api,
+            handler_class=type("NoLog", (simple_server.WSGIRequestHandler,), {"log_message": lambda *args: None})
+        )
+        self.thread = threading.Thread(target=self.server.serve_forever)
+        self.thread.start()
+
+    def tearDown(self):
+        self.server.socket.close()
+        self.server.shutdown()
+        self.thread.join()
+
+
+class TestFactRessource(TestRestApiCase):
+
+    def setUp(self):
+        super().setUp()
+        self.url = self.http_host + '/fact'
 
     def test_on_post_success(self):
         response = requests.post(self.url, json={"name": "sexe", "value": "femme", "state": True})
@@ -115,28 +130,18 @@ class TestFactRessource(unittest.TestCase):
         response = requests.post(self.url, json={"name": 5, "value": "femme", "state": True})
         self.assertEqual(400, response.status_code)
 
-    @classmethod
-    def tearDownClass(cls):
-        cls.server.shutdown()
-        cls.thread.join()
 
+class TestFactsResource(TestRestApiCase):
 
-class TestFactsResource(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        ip, port = '127.0.0.1', 8801
-        cls.url = f"http://{ip}:{port}/facts"
-        cls.url_fact = f"http://{ip}:{port}/fact"
-        cls.server = simple_server.make_server(ip, port, context.api_rest.api)
-        cls.thread = threading.Thread(target=cls.server.serve_forever)
-        cls.thread.start()
+    def setUp(self):
+        super().setUp()
+        self.url = self.http_host + '/facts'
+        self.url_fact = self.http_host + '/fact'
 
     def test_on_get_success(self):
         requests.post(self.url_fact, json={"name": "sexe", "value": "femme", "state": True})
         requests.post(self.url_fact, json={"name": "age", "value": "18", "state": True})
         response = requests.get(self.url)
-        # todo: order in self.assertEqual parameters
         self.assertEqual(
             {
                 "facts": [
@@ -146,8 +151,4 @@ class TestFactsResource(unittest.TestCase):
             },
             json.loads(response.content, encoding='utf-8')
         )
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.server.shutdown()
-        cls.thread.join()
+        self.assertEqual(200, response.status_code)
