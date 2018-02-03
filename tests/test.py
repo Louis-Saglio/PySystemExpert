@@ -96,24 +96,24 @@ class TestFactRessource(unittest.TestCase):
 
     def test_on_post_success(self):
         response = requests.post(self.url, json={"name": "sexe", "value": "femme", "state": True})
-        self.assertEqual(json.loads(response.content, encoding='utf-8')["fact_id"], 456573380057838825)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(456573380057838825, json.loads(response.content, encoding='utf-8')["fact_id"])
+        self.assertEqual(201, response.status_code)
 
     def test_on_post_bad_json(self):
         response = requests.post(self.url, data={"name": "sexe", "value": "femme", "state": True})
-        self.assertEqual(response.status_code, 415)
+        self.assertEqual(415, response.status_code)
 
     def test_on_post_bad_name(self):
         response = requests.post(self.url, json={"name": "sexe", "value": "femme", "foo": True})
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(400, response.status_code)
 
     def test_on_post_state_not_bool(self):
         response = requests.post(self.url, json={"name": "sexe", "value": "femme", "state": "True"})
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(400, response.status_code)
 
     def test_on_post_name_not_str(self):
         response = requests.post(self.url, json={"name": 5, "value": "femme", "state": True})
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(400, response.status_code)
 
     @classmethod
     def tearDownClass(cls):
