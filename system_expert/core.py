@@ -5,10 +5,12 @@ from exceptions import BadFactField
 
 class Fact:
 
-    def __init__(self, name: str, value: Any, state: bool):
+    def __init__(self, name: str, value: Any, state: bool, check: bool=False):
         self.VALUE = value
         self.NAME = name
         self.STATE = state
+        if check:
+            self.check_fields()
 
     def __repr__(self):
         return f"{self.NAME} est {self.VALUE} : {self.STATE}"

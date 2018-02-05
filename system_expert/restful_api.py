@@ -12,8 +12,7 @@ class FactResource:
     @staticmethod
     def on_post(request: Request, response: Response):
         try:
-            new_fact = Fact(**request.media)
-            new_fact.check_fields()
+            new_fact = Fact(**request.media, check=True)
             engine.facts.add(new_fact)
             response.media = {"message": "Fact successfully created", "fact_id": hash(new_fact)}
             response.status = HTTP_CREATED
@@ -44,14 +43,15 @@ class RuleResource:
         try:
             majors, conclusions = request.media["majors"], request.media["conclusions"]
             new_rule = Rule(
-                frozenset(Fact(**major) for major in majors),
-                frozenset(Fact(**conclusion) for conclusion in conclusions)
+                frozenset(Fact(**major, check=True) for major in majors),
+                frozenset(Fact(**conclusion, check=True) for conclusion in conclusions)
             )
             engine.rules.add(new_rule)
             response.media = {"message": "Rule successfully created", "rule_id": hash(new_rule)}
             response.status = HTTP_CREATED
-        except Exception as e:
-            raise e
+        except BadFactField as e:
+            response.media = {"message": str(e)}
+            response.status = HTTP_BAD_REQUEST
 
 
 api = falcon.API()
