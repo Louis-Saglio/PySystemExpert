@@ -152,3 +152,18 @@ class TestFactsResource(TestRestApiCase):
             json.loads(response.content, encoding='utf-8')
         )
         self.assertEqual(200, response.status_code)
+
+
+class TestRuleResource(TestRestApiCase):
+
+    def setUp(self):
+        super().setUp()
+        self.url = self.http_host + '/rule'
+
+    def test_on_post(self):
+        rule_json = {
+            "majors": [{"name": "f1", "value": "v1", "state": True}],
+            "conclusions": [{"name": "f2", "value": "v2", "state": True}]
+        }
+        response = requests.post(self.url, json=rule_json)
+        self.assertEqual(1931427947673733122, json.loads(response.content, encoding='utf-8')["rule_id"])
