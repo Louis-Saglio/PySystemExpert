@@ -14,7 +14,8 @@ class Fact:
         return f"{self.NAME} est {self.VALUE} : {self.STATE}"
 
     def __hash__(self):
-        """Pour pouvoir stocker un Fact dans un set"""
+        """Pour pouvoir stocker un Fact dans un set
+        Un objet Fact ayant les même valeurs aura le même hash dans toutes les sessions"""
         # todo: redefine fact hash
         return int(''.join(str(ord(l)) for l in self.__repr__()))
 
@@ -44,9 +45,10 @@ class Rule:
         return f"Majors : {self.MAJORS}\tConclusions : {self.CONCLUSIONS}"
 
     def __hash__(self):
-        """Must define hash to be hashable if an __eq__ is defined"""
+        """Must define hash to be hashable if an __eq__ is defined
+        Un objet Rule ayant les même valeurs aura le même hash dans toutes les sessions"""
         # todo compute hash in init ? || Value change instance simule change ?
-        return abs(hash((hash(self.CONCLUSIONS), hash(self.MAJORS))))
+        return int(''.join(str(ord(l)) for l in self.__repr__()))
 
     def __eq__(self, other):
         """Pouvoir comparer une rule présente dans engine sans que ce soit la même instance :

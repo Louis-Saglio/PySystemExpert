@@ -166,4 +166,4 @@ class TestRuleResource(TestRestApiCase):
             "conclusions": [{"name": "f2", "value": "v2", "state": True}]
         }
         response = requests.post(self.url, json=rule_json)
-        self.assertEqual(1931427947673733122, json.loads(response.content, encoding='utf-8')["rule_id"])
+        self.assertEqual(836216383422732259, json.loads(response.content, encoding='utf-8')["rule_id"])
