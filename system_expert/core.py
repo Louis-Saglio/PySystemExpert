@@ -15,10 +15,13 @@ class Fact:
 
     def __hash__(self):
         """Pour pouvoir stocker un Fact dans un set"""
+        # todo: redefine fact hash
         return int(''.join(str(ord(l)) for l in self.__repr__()))
 
     def __eq__(self, other: "Fact"):
-        """Fact('abc', 'def', True) == Fact('abc', 'def', True)"""
+        """Fact('abc', 'def', True) == Fact('abc', 'def', True)
+        Pouvoir comparer un fact présent dans une rule sans que ce soit la même instance :
+        sans avoir de base de faits centralisée"""
         return hash(self) == hash(other)
 
     def get_contrary(self) -> "Fact":
@@ -41,13 +44,13 @@ class Rule:
         return f"Majors : {self.MAJORS}\tConclusions : {self.CONCLUSIONS}"
 
     def __hash__(self):
-        # todo: redefine act hash
-        # todo: hash collision ? hash(Rule) ?
+        """Must define hash to be hashable if an __eq__ is defined"""
         # todo compute hash in init ? || Value change instance simule change ?
-        # todo: negative id
-        return hash((hash(self.MAJORS), hash(self.CONCLUSIONS), hash(Rule)))
+        return abs(hash((hash(self.CONCLUSIONS), hash(self.MAJORS))))
 
     def __eq__(self, other):
+        """Pouvoir comparer une rule présente dans engine sans que ce soit la même instance :
+        sans avoir de base de rules centralisée"""
         return hash(self) == hash(other)
 
 
