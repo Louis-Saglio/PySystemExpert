@@ -167,3 +167,21 @@ class TestRuleResource(TestRestApiCase):
         }
         response = requests.post(self.url, json=rule_json)
         self.assertEqual(836216383422732259, json.loads(response.content, encoding='utf-8')["rule_id"])
+
+    def test_on_post_bad_fact(self):
+        rule_json = {
+            "majors": [{"name": 42, "value": "v1", "state": True}],
+            "conclusions": [{"name": "f2", "value": "v2", "state": True}]
+        }
+        response = requests.post(self.url, json=rule_json)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            json.loads(response.content, encoding='utf-8')["message"],
+            "self.NAME class must be str, not int"
+        )
+
+    def test_on_post_bad_json_key(self):
+        pass
+
+    def test_on_post_bad_json_value(self):
+        pass
