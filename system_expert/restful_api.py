@@ -1,5 +1,5 @@
 import falcon
-from falcon import Response, Request, HTTP_BAD_REQUEST, HTTP_CREATED, HTTP_INTERNAL_SERVER_ERROR
+from falcon import Response, Request, HTTP_BAD_REQUEST, HTTP_CREATED
 
 from core import Engine, Fact, Rule
 from exceptions import BadFactField

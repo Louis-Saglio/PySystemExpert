@@ -86,10 +86,6 @@ class Engine:
             if rule.CONCLUSIONS.issubset(self.facts) or {CONCLUSION.get_contrary() for CONCLUSION in rule.CONCLUSIONS}.union(self.facts):
                 self.rules.remove(rule)
 
-    def _remove_from_rules(self, rules):
-        for rule in rules:
-            self.rules.discard(rule)
-
     def process(self):
         """Applique les règles logiques à self.facts jusqu'à ce qu'elles ne le modifient plus"""
         while True:
