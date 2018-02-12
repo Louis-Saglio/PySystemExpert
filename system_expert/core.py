@@ -92,8 +92,11 @@ class Engine:
 
     def process(self):
         """Applique les règles logiques à self.facts jusqu'à ce qu'elles ne le modifient plus"""
-        ended = False
-        while not ended:
-            matched_rules = self._make_syllogism()
-            self._remove_from_rules(matched_rules)
-            ended = not bool(matched_rules)
+        while True:
+            nbr_facts = len(self.facts)
+            self._make_syllogism()
+            self._remove_useless_rules()
+            if len(self.facts) == nbr_facts:  # S'il n'y a pas de nouveaux faits on quite
+                break
+            else:
+                assert len(self.facts) > nbr_facts

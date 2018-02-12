@@ -139,6 +139,17 @@ class TestEngine(unittest.TestCase):
         engine._make_syllogism()
         engine.process()
         self.assertIn(context.Fact("marche", "haha", True), engine.facts)
+        self.assertNotIn(
+            context.Rule(
+                majors=context.helpers.new_frozenset(
+                    context.Fact("foo", "f_value", True)
+                ),
+                conclusions=context.helpers.new_frozenset(
+                    context.Fact("marche", "haha", True)
+                )
+            ),
+            engine.rules
+        )
 
 
 class TestRestApiCase(unittest.TestCase):
