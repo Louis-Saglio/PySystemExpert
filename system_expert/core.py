@@ -1,3 +1,4 @@
+import copy
 from typing import Set, FrozenSet, Any
 
 from exceptions import BadFactField
@@ -79,6 +80,11 @@ class Engine:
     def check_contrary(self):
         for fact in self.facts:
             assert fact.get_contrary() not in self.facts, f"'{fact}' et son contraire sont dans la base de faits"
+
+    def _remove_useless_rules(self):
+        for rule in copy.copy(self.rules):
+            if rule.CONCLUSIONS.issubset(self.facts) or {CONCLUSION.get_contrary() for CONCLUSION in rule.CONCLUSIONS}.union(self.facts):
+                self.rules.remove(rule)
 
     def _remove_from_rules(self, rules):
         for rule in rules:

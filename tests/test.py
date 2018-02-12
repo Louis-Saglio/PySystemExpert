@@ -76,6 +76,64 @@ class TestEngine(unittest.TestCase):
         engine.facts.add(context.Fact("la race", "germanique", False))
         self.assertRaises(AssertionError, engine.check_contrary)
 
+    def test__remove_useless_rules__contrary_case(self):
+        facts = {
+            context.Fact("la couleur des cheveux", "noire", True),
+            context.Fact("la race", "germanique", True)
+        }
+        rules = {
+            context.Rule(
+                majors=context.helpers.new_frozenset(
+                    context.Fact("la couleur des cheveux", "noire", True)
+                ),
+                conclusions=context.helpers.new_frozenset(
+                    context.Fact("la race", "germanique", False)
+                )
+            )
+        }
+        engine = context.Engine(facts, rules)
+        engine._remove_useless_rules()
+        self.assertNotIn(
+            context.Rule(
+                majors=context.helpers.new_frozenset(
+                    context.Fact("la couleur des cheveux", "noire", True)
+                ),
+                conclusions=context.helpers.new_frozenset(
+                    context.Fact("la race", "germanique", False)
+                )
+            ),
+            engine.rules
+        )
+
+    def test__remove_useless_rules(self):
+        facts = {
+            context.Fact("la couleur des cheveux", "noire", True),
+            context.Fact("la race", "germanique", True)
+        }
+        rules = {
+            context.Rule(
+                majors=context.helpers.new_frozenset(
+                    context.Fact("la couleur des cheveux", "noire", True)
+                ),
+                conclusions=context.helpers.new_frozenset(
+                    context.Fact("la race", "germanique", True)
+                )
+            )
+        }
+        engine = context.Engine(facts, rules)
+        engine._remove_useless_rules()
+        self.assertNotIn(
+            context.Rule(
+                majors=context.helpers.new_frozenset(
+                    context.Fact("la couleur des cheveux", "noire", True)
+                ),
+                conclusions=context.helpers.new_frozenset(
+                    context.Fact("la race", "germanique", True)
+                )
+            ),
+            engine.rules
+        )
+
     def test_process(self):
         engine = context.Engine(data.PROCESS_FACTS, data.PROCESS_RULES)
         engine._make_syllogism()
@@ -84,7 +142,6 @@ class TestEngine(unittest.TestCase):
 
 
 class TestRestApiCase(unittest.TestCase):
-
     port_gen = (i for i in range(8800, 8900))
 
     def setUp(self):
