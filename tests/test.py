@@ -187,7 +187,7 @@ class TestFactRessource(TestRestApiCase):
         self.assertEqual(415, response.status_code)
 
     def test_on_post_bad_name(self):
-        response = requests.post(self.url, json={"name": "sexe", "value": "femme", "foo": True})
+        response = requests.post(self.url, json={"name": "sexe", "value": "femme", "not_state": True})
         self.assertEqual(400, response.status_code)
 
     def test_on_post_state_not_bool(self):
@@ -235,6 +235,7 @@ class TestRuleResource(TestRestApiCase):
         }
         response = requests.post(self.url, json=rule_json)
         self.assertEqual(836216383422732259, json.loads(response.content, encoding='utf-8')["rule_id"])
+        self.assertEqual(201, response.status_code)
 
     def test_on_post_bad_fact(self):
         rule_json = {
@@ -249,7 +250,19 @@ class TestRuleResource(TestRestApiCase):
         )
 
     def test_on_post_bad_json_key(self):
-        pass
+        rule_json = {
+            "majors": [{"name": "f1", "value": "v1", "state": True}],
+            "bad_key": [{"name": "f3", "value": "v3", "state": False}],
+            "conclusions": [{"name": "f2", "value": "v2", "state": True}]
+        }
+        response = requests.post(self.url, json=rule_json)
+        self.assertEqual(836216383422732259, json.loads(response.content, encoding='utf-8')["rule_id"])
+        self.assertEqual(201, response.status_code)
 
     def test_on_post_bad_json_value(self):
-        pass
+        rule_json = {
+            "majors": [{"name": "f1", "value": "v1", "state": True}],
+            "conclusions": "bad_value"
+        }
+        response = requests.post(self.url, json=rule_json)
+        self.assertEqual(400, response.status_code)
