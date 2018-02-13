@@ -52,6 +52,9 @@ class RuleResource:
         except BadFactField as e:
             response.media = {"message": str(e)}
             response.status = HTTP_BAD_REQUEST
+        except TypeError:
+            response.media = {"message": "Bad json value"}
+            response.status = HTTP_BAD_REQUEST
 
 
 api = falcon.API()
