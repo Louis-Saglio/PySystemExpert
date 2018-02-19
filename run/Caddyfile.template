@@ -1,5 +1,5 @@
-127.0.0.1:http_port {
-    proxy / localhost:wsgi_port {
+http_addr:http_port {
+    proxy / wsgi_addr:wsgi_port {
         transparent
     }
 }
