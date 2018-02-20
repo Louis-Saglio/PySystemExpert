@@ -1,6 +1,4 @@
-from os import getcwd
-
-PROJECT_ROOT_DIR = getcwd()
+PROJECT_ROOT_DIR = '/'.join(__file__.split('/')[:-2])
 SRC_ROOT_DIR = "system_expert"
 RUN_ROOT_DIR = "run"
 
