@@ -29,8 +29,8 @@ caddy = Popen(["caddy"], stdout=DEVNULL, stderr=DEVNULL)
 
 # noinspection PyUnusedLocal
 def stop(sig, frame):
-    caddy.kill()
-    gunicorn.kill()
+    caddy.terminate()
+    gunicorn.terminate()
     remove("Caddyfile")
     exit(0)
 
@@ -38,5 +38,7 @@ def stop(sig, frame):
 signal.signal(signal.SIGINT, stop)
 signal.signal(signal.SIGTERM, stop)
 print("Hit CTRL + C to stop the server")
+time.sleep(1)  # Time to boot gunicorn and Caddy. Caused a harmful issue in test
+print(f"Listening at http(s)://{HTTP_SERVER_ADDRESS}:{HTTP_SERVER_PORT}")
 while True:
     time.sleep(1000000)
