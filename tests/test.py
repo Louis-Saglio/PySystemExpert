@@ -1,10 +1,14 @@
 import json
+import os
+import subprocess
 import threading
+import time
 import unittest
 from wsgiref import simple_server
 
 import requests
 
+import config
 import context
 import data
 
@@ -266,3 +270,14 @@ class TestRuleResource(TestRestApiCase):
         }
         response = requests.post(self.url, json=rule_json)
         self.assertEqual(400, response.status_code)
+
+
+class TestRun(unittest.TestCase):
+
+    def test_run_default_config(self):
+        os.chdir(config.PROJECT_ROOT_DIR)
+        run = subprocess.Popen("python run.py".split())
+        time.sleep(1)
+        response = requests.get(f"http://{config.HTTP_SERVER_ADDRESS}:{config.HTTP_SERVER_PORT}/facts")
+        self.assertEqual(response.content, b'{"facts": []}')
+        run.terminate()
