@@ -1,9 +1,10 @@
 #! /bin/python
-
-from os import chdir, system, remove
+import signal
+import time
+from os import chdir, remove
 from subprocess import Popen, DEVNULL
-from run.config import *
 
+from run.config import *
 
 chdir(SRC_ROOT_DIR)
 gunicorn = Popen(
@@ -26,10 +27,16 @@ with open("Caddyfile", 'w') as f:
 caddy = Popen(["caddy"], stdout=DEVNULL, stderr=DEVNULL)
 
 
-try:
-    input("Hit enter or CTRL + C to stop the server\n")
-except KeyboardInterrupt:
-    pass
-finally:
-    system(f"kill {gunicorn.pid} {caddy.pid}")
+# noinspection PyUnusedLocal
+def stop(sig, frame):
+    caddy.kill()
+    gunicorn.kill()
     remove("Caddyfile")
+    exit(0)
+
+
+signal.signal(signal.SIGINT, stop)
+signal.signal(signal.SIGTERM, stop)
+print("Hit CTRL + C to stop the server")
+while True:
+    time.sleep(1000000)
