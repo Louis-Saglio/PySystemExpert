@@ -2,7 +2,7 @@ PROJECT_ROOT_DIR = '/'.join(__file__.split('/')[:-2])
 SRC_ROOT_DIR = "system_expert"
 RUN_ROOT_DIR = "run"
 
-HTTP_APP_MODULE = "restful_api.py"
+HTTP_APP_MODULE = "restful_api"
 WSGI_API_VARIABLE_NAME = "api"
 
 WSGI_SERVER_PORT = "8888"
