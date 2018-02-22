@@ -1,10 +1,18 @@
 #! /bin/python
 import signal
 import time
-from os import chdir, remove
+from os import chdir, remove, getpid, kill
 from subprocess import Popen, DEVNULL
 
 from run.config import *
+
+
+# If runserver is already running, kill it
+try:
+    with open("running_info", "r") as f:
+        kill(int(f.read()), signal.SIGTERM)
+except FileNotFoundError:
+    pass
 
 chdir(SRC_ROOT_DIR)
 gunicorn = Popen(
@@ -27,16 +35,23 @@ with open("Caddyfile", 'w') as f:
 caddy = Popen(["caddy"], stdout=DEVNULL, stderr=DEVNULL)
 
 
+with open("running_info", "w") as f:
+    f.write(str(getpid()))
+
+
 # noinspection PyUnusedLocal
 def stop(sig, frame):
     caddy.terminate()
     gunicorn.terminate()
     remove("Caddyfile")
+    remove("running_info")
     exit(0)
 
 
 signal.signal(signal.SIGINT, stop)
 signal.signal(signal.SIGTERM, stop)
+
+
 print("Hit CTRL + C to stop the server")
 time.sleep(1)  # Time to boot gunicorn and Caddy. Caused a harmful issue in test
 print(f"Listening at http(s)://{HTTP_SERVER_ADDRESS}:{HTTP_SERVER_PORT}")
