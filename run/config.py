@@ -1,3 +1,5 @@
+import string
+
 PROJECT_ROOT_DIR = '/'.join(__file__.split('/')[:-2])  # todo : use os.path.split()
 SRC_ROOT_DIR = "system_expert"
 RUN_ROOT_DIR = "run"
@@ -12,4 +14,6 @@ WSGI_SERVER_ADDRESS = "127.0.0.1"
 HTTP_SERVER_ADDRESS = "127.0.0.1"
 
 DATA_BASE_FILE = "database.sqlite3"
+
 USER_UUID_LENGTH = 16
+USER_UUID_CHARS = string.ascii_letters + string.digits

@@ -107,8 +107,15 @@ class Engine:
 
 class DataManager:
 
-    def __init__(self):
-        self.connexion = sqlite3.connect(os.path.join(config.PROJECT_ROOT_DIR, config.DATA_BASE_FILE))
+    def __init__(self, db_file_path=None):
+        self.connexion = sqlite3.connect(db_file_path or os.path.join(config.PROJECT_ROOT_DIR, config.DATA_BASE_FILE))
+
+    def add_user(self):
+        cursor = self.connexion.cursor()
+        uuid = ''.join(random.sample(config.USER_UUID_CHARS, config.USER_UUID_LENGTH))
+        cursor.execute("INSERT INTO users (uuid) VALUES (?)", (uuid,))
+        self.connexion.commit()
+        return uuid
 
     def _get_user(self, uuid: str):
         return self.connexion.cursor().execute(
@@ -120,19 +127,12 @@ class DataManager:
         cursor = self.connexion.cursor()
         cursor.execute(
             "INSERT INTO facts (name, value, state, type, user_id) VALUES (?,?,?,?,?)",
-            (fact.NAME, fact.VALUE, fact.STATE, str(fact.VALUE.__class__), self._get_user(uuid))
+            (fact.NAME, fact.VALUE, fact.STATE, type(fact.VALUE).__name__, self._get_user(uuid))
         )
         self.connexion.commit()
 
     def __del__(self):
         self.connexion.close()
-
-    def create_user(self):
-        cursor = self.connexion.cursor()
-        uuid = ''.join(random.sample(string.ascii_letters + string.digits, config.USER_UUID_LENGTH))
-        cursor.execute("INSERT INTO users (uuid) VALUES (?)", (uuid,))
-        self.connexion.commit()
-        return uuid
 
 
 class SystemExpert:
@@ -142,7 +142,7 @@ class SystemExpert:
         self.data_manager = DataManager()
 
     def get_api_key(self):
-        return self.data_manager.create_user()
+        return self.data_manager.add_user()
 
     def add_fact(self, uuid: str, fact: Fact):
         self.data_manager.add_fact(uuid, fact)
