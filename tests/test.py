@@ -209,16 +209,36 @@ class TestFactsResource(TestRestApiCase):
         super().setUp()
         self.url = self.http_host + '/facts'
         self.url_fact = self.http_host + '/fact'
+        self.url_rules = self.http_host + '/rule'
 
     def test_on_get_success(self):
         requests.post(self.url_fact, json={"name": "sexe", "value": "femme", "state": True})
-        requests.post(self.url_fact, json={"name": "age", "value": "18", "state": True})
+        requests.post(self.url_fact, json={"name": "age", "value": 18, "state": True})
+        requests.post(
+            self.url_rules,
+            json={
+                "majors": [{"name": "taille", "value": 1.65, "state": True}],
+                "conclusions": [{"name": "marche", "value": True, "state": True}]
+            }
+        )
+        requests.post(
+            self.url_rules,
+            json={
+                "majors": [
+                    {"name": "sexe", "value": "femme", "state": True},
+                    {"name": "age", "value": 18, "state": True}
+                ],
+                "conclusions": [{"name": "taille", "value": 1.65, "state": True}]
+            }
+        )
         response = requests.get(self.url)
         self.assertEqual(
             {
-                "facts": [
-                    {"name": "sexe", "value": "femme", "state": True},
-                    {'name': 'age', 'state': True, 'value': '18'}
+                'facts': [
+                    {'name': 'sexe', 'state': True, 'value': 'femme'},
+                    {'name': 'marche', 'state': True, 'value': True},
+                    {'name': 'age', 'state': True, 'value': 18},
+                    {'name': 'taille', 'state': True, 'value': 1.65}
                 ]
             },
             json.loads(response.content, encoding='utf-8')
