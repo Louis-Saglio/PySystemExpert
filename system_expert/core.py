@@ -78,11 +78,13 @@ class Engine:
         return matched_rules
 
     def check_contrary(self):
+        # todo : unused
         for fact in self.facts:
             assert fact.get_contrary() not in self.facts, f"'{fact}' et son contraire sont dans la base de faits"
 
     def _remove_useless_rules(self):
         for rule in copy.copy(self.rules):
+            # todo use issuperset
             if rule.CONCLUSIONS.issubset(self.facts) or {CONCLUSION.get_contrary() for CONCLUSION in rule.CONCLUSIONS}.union(self.facts):
                 self.rules.remove(rule)
 

@@ -17,8 +17,8 @@ except FileNotFoundError:
 chdir(SRC_ROOT_DIR)
 gunicorn = Popen(
     f"gunicorn -b {WSGI_SERVER_ADDRESS}:{WSGI_SERVER_PORT} {HTTP_APP_MODULE}:{WSGI_API_VARIABLE_NAME}".split(),
-    stdout=DEVNULL,
-    stderr=DEVNULL
+    # stdout=DEVNULL,
+    # stderr=DEVNULL
 )
 chdir(PROJECT_ROOT_DIR)
 
@@ -32,7 +32,11 @@ with open("Caddyfile", 'w') as f:
                 )
 
 
-caddy = Popen(["caddy"], stdout=DEVNULL, stderr=DEVNULL)
+caddy = Popen(
+    ["caddy"],
+    stdout=DEVNULL,
+    stderr=DEVNULL
+)
 
 
 with open("running_info", "w") as f:
