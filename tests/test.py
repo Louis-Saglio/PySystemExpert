@@ -308,7 +308,9 @@ class TestDataManager(unittest.TestCase):
 
     def setUp(self):
         self.data_manager = DataManager(':memory:')
-        with open("/home/louis/Projects/Python/SystemExpert/create_db.sql") as f:
+        with open(
+            os.path.join(config.PROJECT_ROOT_DIR, os.path.join(config.DATA_DIR, config.CREATE_DATA_BASE_SCRIPT))
+        ) as f:
             self.data_manager.connexion.executescript(f.read())
         self.data_manager.connexion.execute("INSERT INTO users (uuid) VALUES ('test_user')")
         self.data_manager.connexion.commit()

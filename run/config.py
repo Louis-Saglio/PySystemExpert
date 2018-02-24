@@ -13,7 +13,9 @@ HTTP_SERVER_PORT = "8000"
 WSGI_SERVER_ADDRESS = "127.0.0.1"
 HTTP_SERVER_ADDRESS = "127.0.0.1"
 
+DATA_DIR = "data"
 DATA_BASE_FILE = "database.sqlite3"
+CREATE_DATA_BASE_SCRIPT = "create_db.sql"
 
 USER_UUID_LENGTH = 16
 USER_UUID_CHARS = string.ascii_letters + string.digits

@@ -108,7 +108,9 @@ class Engine:
 class DataManager:
 
     def __init__(self, db_file_path=None):
-        self.connexion = sqlite3.connect(db_file_path or os.path.join(config.PROJECT_ROOT_DIR, config.DATA_BASE_FILE))
+        self.connexion = sqlite3.connect(
+            db_file_path or os.path.join(config.PROJECT_ROOT_DIR, os.path.join(config.DATA_DIR, config.DATA_BASE_FILE))
+        )
 
     def add_user(self):
         cursor = self.connexion.cursor()
