@@ -1,11 +1,13 @@
 #! /bin/python
+import sys
+
 import signal
 import time
-from os import chdir, remove, getpid, kill
+from os import chdir, remove, getpid, kill, path
 from subprocess import Popen, DEVNULL
 
-from run.config import *
-
+sys.path.insert(0, path.split(path.split(__file__)[0]))
+print(path.split(__file__))
 
 # If runserver is already running, kill it
 try:
@@ -14,16 +16,15 @@ try:
 except FileNotFoundError:
     pass
 
-chdir(SRC_ROOT_DIR)
+chdir(PROJECT_ROOT_DIR)
 gunicorn = Popen(
     f"gunicorn -b {WSGI_SERVER_ADDRESS}:{WSGI_SERVER_PORT} {HTTP_APP_MODULE}:{WSGI_API_VARIABLE_NAME}".split(),
     # stdout=DEVNULL,
     stderr=DEVNULL
 )
-chdir(PROJECT_ROOT_DIR)
 
 with open("Caddyfile", 'w') as f:
-    with open(f"{RUN_ROOT_DIR}/Caddyfile.template", "r") as t:
+    with open(f"{REST_API_DIR}/Caddyfile.template", "r") as t:
         f.write(t.read()
                 .replace('http_port', HTTP_SERVER_PORT)
                 .replace('wsgi_port', WSGI_SERVER_PORT)

@@ -8,153 +8,8 @@ from wsgiref import simple_server
 
 import requests
 
-import config
 import context
-import data
 from core import DataManager
-
-
-class TestFact(unittest.TestCase):
-
-    def test_init(self):
-        f1 = context.Fact("a", "b", True)
-        f2 = context.Fact(name="a", value="b", state=True)
-        self.assertEqual(
-            (f1.NAME, f1.VALUE, f1.STATE),
-            (f2.NAME, f2.VALUE, f2.STATE)
-        )
-        self.assertIsInstance(f1.NAME, str)
-        self.assertIsInstance(f1.VALUE, str)
-        self.assertIsInstance(f1.STATE, bool)
-
-    def test_repr(self):
-        f1 = context.Fact("a", "b", True)
-        f2 = context.Fact("a", "b", True)
-        self.assertEqual(repr(f1), repr(f2))
-
-    def test_hash(self):
-        f1 = context.Fact("a", "b", True)
-        f2 = context.Fact("a", "b", True)
-        self.assertEqual(hash(f1), hash(f2))
-
-    def test_eq(self):
-        f1 = context.Fact("a", "b", True)
-        f2 = context.Fact("a", "b", True)
-        self.assertEqual(f1, f2)
-
-    def test_get_contrary(self):
-        f1 = context.Fact("a", "b", True)
-        f2 = context.Fact("a", "b", False)
-        self.assertEqual(f1.get_contrary(), f2)
-
-
-class TestRule(unittest.TestCase):
-
-    def test_init(self):
-        rule = context.Rule(frozenset(data.FACTS), frozenset((context.Fact("a", "b", True),)))
-        self.assertIsInstance(rule.CONCLUSIONS, frozenset)
-        self.assertIsInstance(rule.MAJORS, frozenset)
-        for conclusion in rule.CONCLUSIONS:
-            self.assertIsInstance(conclusion, context.Fact)
-        for major in rule.MAJORS:
-            self.assertIsInstance(major, context.Fact)
-
-
-class TestEngine(unittest.TestCase):
-
-    def test_init(self):
-        engine = context.Engine(data.FACTS, data.RULES)
-        self.assertIsInstance(engine.facts, set)
-        self.assertIsInstance(data.RULES, set)
-        for fact in engine.facts:
-            self.assertIsInstance(fact, context.Fact)
-        for rule in engine.rules:
-            self.assertIsInstance(rule, context.Rule)
-
-    def test_make_syllogism(self):
-        engine = context.Engine(data.FACTS, data.RULES)
-        engine._make_syllogism()
-        self.assertIn(context.Fact("la race", "germanique", False), engine.facts)
-
-    def test_check_contrary(self):
-        engine = context.Engine(data.FACTS, data.RULES)
-        engine.facts.add(context.Fact("la race", "germanique", False))
-        self.assertRaises(AssertionError, engine.check_contrary)
-
-    def test__remove_useless_rules__contrary_case(self):
-        facts = {
-            context.Fact("la couleur des cheveux", "noire", True),
-            context.Fact("la race", "germanique", True)
-        }
-        rules = {
-            context.Rule(
-                majors=context.helpers.new_frozenset(
-                    context.Fact("la couleur des cheveux", "noire", True)
-                ),
-                conclusions=context.helpers.new_frozenset(
-                    context.Fact("la race", "germanique", False)
-                )
-            )
-        }
-        engine = context.Engine(facts, rules)
-        engine._remove_useless_rules()
-        self.assertNotIn(
-            context.Rule(
-                majors=context.helpers.new_frozenset(
-                    context.Fact("la couleur des cheveux", "noire", True)
-                ),
-                conclusions=context.helpers.new_frozenset(
-                    context.Fact("la race", "germanique", False)
-                )
-            ),
-            engine.rules
-        )
-
-    def test__remove_useless_rules(self):
-        facts = {
-            context.Fact("la couleur des cheveux", "noire", True),
-            context.Fact("la race", "germanique", True)
-        }
-        rules = {
-            context.Rule(
-                majors=context.helpers.new_frozenset(
-                    context.Fact("la couleur des cheveux", "noire", True)
-                ),
-                conclusions=context.helpers.new_frozenset(
-                    context.Fact("la race", "germanique", True)
-                )
-            )
-        }
-        engine = context.Engine(facts, rules)
-        engine._remove_useless_rules()
-        self.assertNotIn(
-            context.Rule(
-                majors=context.helpers.new_frozenset(
-                    context.Fact("la couleur des cheveux", "noire", True)
-                ),
-                conclusions=context.helpers.new_frozenset(
-                    context.Fact("la race", "germanique", True)
-                )
-            ),
-            engine.rules
-        )
-
-    def test_process(self):
-        engine = context.Engine(data.PROCESS_FACTS, data.PROCESS_RULES)
-        engine._make_syllogism()
-        engine.process()
-        self.assertIn(context.Fact("marche", "haha", True), engine.facts)
-        self.assertNotIn(
-            context.Rule(
-                majors=context.helpers.new_frozenset(
-                    context.Fact("foo", "f_value", True)
-                ),
-                conclusions=context.helpers.new_frozenset(
-                    context.Fact("marche", "haha", True)
-                )
-            ),
-            engine.rules
-        )
 
 
 class TestRestApiCase(unittest.TestCase):
@@ -297,7 +152,8 @@ class TestRun(unittest.TestCase):
 
     def test_run_default_config(self):
         os.chdir(config.PROJECT_ROOT_DIR)
-        run = subprocess.Popen("python run.py".split())
+        os.chdir(config.REST_API_DIR)
+        run = subprocess.Popen(f"python {config.REST_API_RUNNING_SCRPIT}".split())
         time.sleep(1)
         response = requests.get(f"http://{config.HTTP_SERVER_ADDRESS}:{config.HTTP_SERVER_PORT}/facts")
         self.assertEqual(response.content, b'{"facts": []}')
@@ -309,7 +165,10 @@ class TestDataManager(unittest.TestCase):
     def setUp(self):
         self.data_manager = DataManager(':memory:')
         with open(
-            os.path.join(config.PROJECT_ROOT_DIR, os.path.join(config.DATA_DIR, config.CREATE_DATA_BASE_SCRIPT))
+            os.path.join(
+                config.PROJECT_ROOT_DIR,
+                os.path.join(config.DATA_DIR, config.CREATE_DATA_BASE_SCRIPT)
+            )
         ) as f:
             self.data_manager.connexion.executescript(f.read())
         self.data_manager.connexion.execute("INSERT INTO users (uuid) VALUES ('test_user')")

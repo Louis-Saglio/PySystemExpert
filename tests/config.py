@@ -1,10 +1,12 @@
 import string
 
-PROJECT_ROOT_DIR = '/'.join(__file__.split('/')[:-2])  # todo : use os.path.split()
+PROJECT_ROOT_DIR = '/'.join(__file__.split('/')[:-1])  # todo : use os.path.split()
 SRC_ROOT_DIR = "system_expert"
-RUN_ROOT_DIR = "run"
 
-HTTP_APP_MODULE = "restful_api"
+REST_API_DIR = "rest_api"
+REST_API_RUNNING_SCRPIT = "run.py"
+
+HTTP_APP_MODULE = "system_expert.restful_api"
 WSGI_API_VARIABLE_NAME = "api"
 
 WSGI_SERVER_PORT = "8888"
