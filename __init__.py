@@ -1,1 +1,1 @@
-from .system_expert.core import SystemExpert, Fact_tuple, Rule
+from .system_expert.core import SystemExpert

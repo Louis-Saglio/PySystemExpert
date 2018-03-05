@@ -1,7 +1,7 @@
 import falcon
 from falcon import Response, Request, HTTP_BAD_REQUEST, HTTP_CREATED
 
-from core import Engine, Fact, Rule
+from system_expert import SystemExpert
 from exceptions import BadFactField
 
 engine = Engine(set(), set())
@@ -12,7 +12,7 @@ class FactResource:
     @staticmethod
     def on_post(request: Request, response: Response):
         try:
-            new_fact = Fact(**request.media, check=True)
+            new_fact = Fact_tuple(**request.media, check=True)
             engine.facts.add(new_fact)
             response.media = {"message": "Fact successfully created", "fact_id": hash(new_fact)}
             response.status = HTTP_CREATED
@@ -43,8 +43,8 @@ class RuleResource:
         try:
             majors, conclusions = request.media["majors"], request.media["conclusions"]
             new_rule = Rule(
-                frozenset(Fact(**major, check=True) for major in majors),
-                frozenset(Fact(**conclusion, check=True) for conclusion in conclusions)
+                frozenset(Fact_tuple(**major, check=True) for major in majors),
+                frozenset(Fact_tuple(**conclusion, check=True) for conclusion in conclusions)
             )
             engine.rules.add(new_rule)
             response.media = {"message": "Rule successfully created", "rule_id": hash(new_rule)}
