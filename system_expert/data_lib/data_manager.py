@@ -10,9 +10,12 @@ class DataManager:
     def __init__(self, db_path: str):
         self.connexion = sqlite3.connect(db_path)
         self.db_path = db_path
+        if self.db_path == ':memory:':
+            self.create_db()
 
     def create_db(self):
-        self.connexion.executescript(CREATE_DB_SCRIPT)
+        with open(CREATE_DB_SCRIPT) as f:
+            self.connexion.executescript(f.read())
 
     def create_user(self, uuid: str):
         self.connexion.execute(

@@ -1,14 +1,12 @@
 import unittest
 
-from data_manager import DataManager, CREATE_DB_SCRIPT
+import data_manager
 
 
 class TestDataManager(unittest.TestCase):
 
     def setUp(self):
-        self.data_manager = DataManager(':memory:')
-        with open(CREATE_DB_SCRIPT) as f:
-            self.data_manager.connexion.executescript(f.read())
+        self.data_manager = data_manager.DataManager(':memory:')
         self.data_manager.connexion.execute("INSERT INTO users (uuid) VALUES ('test_user')")
         self.data_manager.connexion.commit()
 
