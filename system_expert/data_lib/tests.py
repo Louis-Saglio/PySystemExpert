@@ -12,8 +12,9 @@ class TestDataManager(unittest.TestCase):
         self.data_manager.connexion.execute("INSERT INTO users (uuid) VALUES ('test_user')")
         self.data_manager.connexion.commit()
 
-    def test_add_user(self):
-        uuid = self.data_manager.create_instance()
+    def test_create_instance(self):
+        uuid = 'test_id'
+        self.data_manager.create_instance(uuid)
         self.assertEqual(
             uuid,
             self.data_manager.connexion.execute("SELECT uuid FROM users WHERE id = 2").fetchone()[0]

@@ -1,1 +1,1 @@
-from .core import SystemExpert
+from core import SystemExpert
