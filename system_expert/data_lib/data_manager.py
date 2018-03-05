@@ -33,3 +33,6 @@ class DataManager:
             (name, value, state, type(value).__name__, self._get_user_id(user_uuid))
         )
         self.connexion.commit()
+
+    def get_used_user_uuids(self) -> set:
+        return {uuid[0] for uuid in self.connexion.execute("SELECT uuid FROM users").fetchall()}

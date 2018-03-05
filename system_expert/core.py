@@ -3,7 +3,7 @@ from typing import Hashable, Iterable, Tuple, Set
 
 from core_lib import Engine
 from data_lib import DataManager
-from settings import DATA_BASE_FILE, INSTANCE_ID_CHARS_POOL, INSTANCE_ID_LENGTH
+from settings import DATA_BASE_FILE, USER_UUID_CHARS_POOL, USER_UUID_LENGTH
 
 Fact_tuple = Tuple[str, Hashable, bool]
 
@@ -16,13 +16,21 @@ class SystemExpert:
         self.engine = Engine(set(), set())
         self.data_manager = DataManager(DATA_BASE_FILE)
 
-    def _get_instance_id(self):
-        return random.sample(INSTANCE_ID_CHARS_POOL, INSTANCE_ID_LENGTH)
+    def _get_user_id(self):
+        used_uuids = self.data_manager.get_used_user_uuids()
+        for _ in range(1000):
+            uuid = random.sample(USER_UUID_CHARS_POOL, USER_UUID_LENGTH)
+            if uuid not in used_uuids:
+                return uuid
+        else:
+            raise UserWarning(
+                f"Not enough user_uuid {len(used_uuids)}. Increase USER_UUID_LENGTH and USER_UUID_CHARS_POOL"
+            )
 
-    def create_instance(self) -> str:
-        instance_id = self._get_instance_id()
-        self.data_manager.create_user(instance_id)
-        return instance_id
+    def create_user(self) -> str:
+        user_id = self._get_user_id()
+        self.data_manager.create_user(user_id)
+        return user_id
 
     def add_fact(self, uuid: str, name: str, value: Hashable, state: bool):
         pass
