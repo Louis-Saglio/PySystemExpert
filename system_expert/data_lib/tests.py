@@ -14,7 +14,7 @@ class TestDataManager(unittest.TestCase):
 
     def test_create_instance(self):
         uuid = 'test_id'
-        self.data_manager.create_instance(uuid)
+        self.data_manager.create_user(uuid)
         self.assertEqual(
             uuid,
             self.data_manager.connexion.execute("SELECT uuid FROM users WHERE id = 2").fetchone()[0]
@@ -34,7 +34,7 @@ class TestDataManager(unittest.TestCase):
         self.assertEqual(
             ('fact', 'val', 1, 'str', 'test_user'),
             self.data_manager.connexion.execute(
-                "SELECT name, value, state, type, uuid FROM facts f JOIN users u ON f.user_id = ?",
-                ("test_user",)
+                "SELECT f.name, f.value, f.state, f.type, u.uuid FROM facts f JOIN users u ON f.user_id = ?",
+                (self.data_manager._get_user_id('test_user'),)
             ).fetchone()
         )

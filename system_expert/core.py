@@ -21,7 +21,7 @@ class SystemExpert:
 
     def create_instance(self) -> str:
         instance_id = self._get_instance_id()
-        self.data_manager.create_instance(instance_id)
+        self.data_manager.create_user(instance_id)
         return instance_id
 
     def add_fact(self, uuid: str, name: str, value: Hashable, state: bool):
