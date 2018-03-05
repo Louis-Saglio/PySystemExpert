@@ -1,9 +1,9 @@
 from random import choice
 from typing import Hashable, Iterable, Tuple, Set
 
-from core_lib import Engine
-from data_lib import DataManager
-from settings import DATA_BASE_FILE, USER_UUID_CHARS_POOL, USER_UUID_LENGTH
+import core_lib
+import data_lib
+import settings
 
 Fact_tuple = Tuple[str, Hashable, bool]
 
@@ -13,13 +13,14 @@ class SystemExpert:
     # todo : data verification
 
     def __init__(self):
-        self.engine = Engine(set(), set())
-        self.data_manager = DataManager(DATA_BASE_FILE)  # todo : check database integrity
+        self.engine = core_lib.Engine(set(), set())
+        self.data_manager = data_lib.DataManager(':memory:' if settings.DEBUG else settings.DATA_BASE_FILE)
+        # todo : check database integrity
 
     def _get_user_id(self):
         used_uuids = self.data_manager.get_used_user_uuids()
         for _ in range(1000):
-            uuid = ''.join(choice(USER_UUID_CHARS_POOL) for _ in range(USER_UUID_LENGTH))
+            uuid = ''.join(choice(settings.USER_UUID_CHARS_POOL) for _ in range(settings.USER_UUID_LENGTH))
             if uuid not in used_uuids:
                 return uuid
         else:
