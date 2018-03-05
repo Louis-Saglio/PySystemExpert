@@ -1,4 +1,4 @@
-import random
+from random import choice
 from typing import Hashable, Iterable, Tuple, Set
 
 from core_lib import Engine
@@ -14,12 +14,12 @@ class SystemExpert:
 
     def __init__(self):
         self.engine = Engine(set(), set())
-        self.data_manager = DataManager(DATA_BASE_FILE)
+        self.data_manager = DataManager(DATA_BASE_FILE)  # todo : check database integrity
 
     def _get_user_id(self):
         used_uuids = self.data_manager.get_used_user_uuids()
         for _ in range(1000):
-            uuid = random.sample(USER_UUID_CHARS_POOL, USER_UUID_LENGTH)
+            uuid = ''.join(choice(USER_UUID_CHARS_POOL) for _ in range(USER_UUID_LENGTH))
             if uuid not in used_uuids:
                 return uuid
         else:
