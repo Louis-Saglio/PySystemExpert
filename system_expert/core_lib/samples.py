@@ -9,7 +9,7 @@ class Fact:
         self.NAME = name
         self.STATE = state
         if check:
-            self.check_fields()
+            self._check_fields()
 
     def __repr__(self):
         return f"{self.NAME} est {self.VALUE} : {self.STATE}"
@@ -29,7 +29,7 @@ class Fact:
     def get_contrary(self) -> "Fact":
         return Fact(self.NAME, self.VALUE, not self.STATE)
 
-    def check_fields(self):
+    def _check_fields(self):
         if not isinstance(self.NAME, str):
             raise BadFactField(f"self.NAME class must be str, not {self.NAME.__class__.__name__}")
         if not isinstance(self.STATE, bool):
