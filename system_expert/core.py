@@ -17,7 +17,7 @@ class SystemExpert:
         self.data_manager = data_lib.DataManager(':memory:' if settings.DEBUG else settings.DATA_BASE_FILE)
         # todo : check database integrity
 
-    def _get_user_id(self):
+    def _get_new_user_id(self):
         used_uuids = self.data_manager.get_used_user_uuids()
         for _ in range(1000):
             uuid = ''.join(choice(settings.USER_UUID_CHARS_POOL) for _ in range(settings.USER_UUID_LENGTH))
@@ -29,11 +29,14 @@ class SystemExpert:
             )
 
     def create_user(self) -> str:
-        user_id = self._get_user_id()
+        user_id = self._get_new_user_id()
         self.data_manager.create_user(user_id)
         return user_id
 
-    def add_fact(self, uuid: str, name: str, value: Hashable, state: bool):
+    def add_fact(self, user_uuid: str, name: str, value: Hashable, state: bool):
+        return self.data_manager.add_fact(user_uuid, name, value, state)
+
+    def get_fact(self, user_uuid, fact_id):
         pass
 
     def add_rule(self, uuid: str, majors: Iterable[Fact_tuple], conclusions: Iterable[Fact_tuple]):

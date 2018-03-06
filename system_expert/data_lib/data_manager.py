@@ -30,12 +30,13 @@ class DataManager:
             (user_uuid,)
         ).fetchone()[0]
 
-    def add_fact(self, user_uuid: str, name: str, value: Hashable, state: bool):
-        self.connexion.execute(
+    def add_fact(self, user_uuid: str, name: str, value: Hashable, state: bool) -> int:
+        fact_id = self.connexion.execute(
             "INSERT INTO facts (name, value, state, type, user_id) VALUES (?,?,?,?,?)",
             (name, value, state, type(value).__name__, self._get_user_id(user_uuid))
-        )
+        ).lastrowid
         self.connexion.commit()
+        return fact_id
 
     def get_used_user_uuids(self) -> set:
         return {uuid[0] for uuid in self.connexion.execute("SELECT uuid FROM users").fetchall()}
