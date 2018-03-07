@@ -9,6 +9,11 @@ Fact_tuple = Tuple[str, Hashable, bool]
 
 
 class SystemExpert:
+    """
+    Setter methods (add_fact, add_rule) accept parameters of builtin types.
+    Getter methods (get_fact, get_facts) return custom sample type.
+    Unless a specific field is precised (_get_new_user_id).
+    """
 
     # todo : data verification
 
@@ -36,8 +41,8 @@ class SystemExpert:
     def add_fact(self, user_uuid: str, name: str, value: Hashable, state: bool):
         return self.data_manager.add_fact(user_uuid, name, value, state)
 
-    def get_fact(self, user_uuid, fact_id):
-        pass
+    def get_fact(self, user_uuid: str, fact_id: int):
+        return self.data_manager.get_fact(user_uuid, fact_id)
 
     def add_rule(self, uuid: str, majors: Iterable[Fact_tuple], conclusions: Iterable[Fact_tuple]):
         pass

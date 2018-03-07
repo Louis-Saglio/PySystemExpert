@@ -40,3 +40,9 @@ class DataManager:
 
     def get_used_user_uuids(self) -> set:
         return {uuid[0] for uuid in self.connexion.execute("SELECT uuid FROM users").fetchall()}
+
+    def get_fact(self, user_uuid: str, fact_id: int):
+        return self.connexion.execute(
+            "SELECT name, value, state, type FROM facts WHERE id = ? AND user_id = ?",
+            (fact_id, user_uuid)
+        ).fetchone()
