@@ -2,7 +2,7 @@ from typing import Set
 
 import copy
 
-from samples import Fact, Rule
+from beans import Fact, Rule
 
 
 class Engine:
