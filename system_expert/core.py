@@ -14,6 +14,16 @@ class SystemExpert:
     Une instance de logiciel par utilisateur ?
     Séparer l'interface du logiciel ?
 
+    A) On peut lancer plusieurs instances de système expert.
+    B) Chaque instance agit sur les mêmes données.
+    C) Chaque instance gère plusieurs utilisateurs.
+    D) Plusieures connexions à un même compte utilisateur sont acceptées.
+    E) Un utilisateur ne peut pas accèder aux données d'un autre utilisateur.
+    Donc :
+    L'accès au données est asynchrone est par conséquent doit être controllé.
+    Chaque requête envoyée au SE doit préciser l'utilisateur.
+
+
     Setter methods (add_fact, add_rule) accept parameters of builtin types.
     Getter methods (get_fact, get_facts) return custom sample type.
     Unless a specific field is precised (_get_new_user_id).
