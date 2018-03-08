@@ -2,7 +2,18 @@ from typing import Any, FrozenSet
 from exceptions import BadFactField
 
 
+"""
+Les méthodes des classes bean ne doivent surtout pas interagir avec un objet externe,
+à moins que cette objet ne soit instancié à l'intérieur de l'une de ces méthodes.
+Les attributs publics d'un objet bean ne doivent contenir que des données spécifiques à la classe de cette objet.
+Des attributs privés peuvent être utilisés en tant que variable helper.
+"""
+
+
 class Fact:
+    """
+    Class bean destiner à modéliser un fait
+    """
 
     def __init__(self, name: str, value: Any, state: bool, check: bool=False):
         self.VALUE = value
@@ -37,6 +48,9 @@ class Fact:
 
 
 class Rule:
+    """
+    Classe destinée à modéliser une règle
+    """
 
     def __init__(self, majors: FrozenSet[Fact], conclusions: FrozenSet[Fact]):
         self.CONCLUSIONS = conclusions

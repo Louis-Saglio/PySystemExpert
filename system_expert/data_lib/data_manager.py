@@ -6,11 +6,16 @@ CREATE_DB_SCRIPT = os.path.join(os.path.dirname(__file__), 'create_db.sql')
 
 
 class DataManager:
+    """
+    Classe chargée de sauvegarder et de restituer des données spécifiques aux système experts.
+    Pour des raisons de performance, une base de données doit pouvoir enregistrer les données de plusieur systèmes experts.
+    Par conséquent la gestion des données doit supporter le multiutilisateur, un utilisateur étant une instance de système expert.
+    """
 
     def __init__(self, db_path: str):
         self.connexion = sqlite3.connect(db_path)
         self.db_path = db_path
-        if self.db_path == ':memory:':
+        if self.db_path == ':memory:':  # todo : explicit better than implicit ?
             self.create_db()
 
     def create_db(self):

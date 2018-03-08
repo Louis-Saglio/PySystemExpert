@@ -10,6 +10,10 @@ Fact_tuple = Tuple[str, Hashable, bool]
 
 class SystemExpert:
     """
+    Logiciel de système expert. Les méthodes public de cette classes sont les intéractions possibles avec le logiciel.
+    Une instance de logiciel par utilisateur ?
+    Séparer l'interface du logiciel ?
+
     Setter methods (add_fact, add_rule) accept parameters of builtin types.
     Getter methods (get_fact, get_facts) return custom sample type.
     Unless a specific field is precised (_get_new_user_id).
