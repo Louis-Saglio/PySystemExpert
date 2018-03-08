@@ -1,11 +1,12 @@
 from random import choice
-from typing import Hashable, Iterable, Tuple, Set
+from typing import Hashable, Iterable, Tuple, Set, FrozenSet
 
 import core_lib
 import data_lib
 import settings
 
 Fact_tuple = Tuple[str, Hashable, bool]
+Rule_tuple = Tuple[FrozenSet[Fact_tuple], FrozenSet[Fact_tuple]]
 
 
 class SystemExpert:
@@ -25,14 +26,14 @@ class SystemExpert:
 
 
     Setter methods (add_fact, add_rule) accept parameters of builtin types.
-    Getter methods (get_fact, get_facts) return custom sample type.
-    Unless a specific field is precised (_get_new_user_id).
+
+    Multiprocess intercommunication is made through database
     """
 
     # todo : data verification
 
     def __init__(self):
-        self.engine = core_lib.Engine(set(), set())
+        self.engine = core_lib.Engine(set(), set())  # todo : Why instanciate here ?
         self.data_manager = data_lib.DataManager(':memory:' if settings.DEBUG else settings.DATA_BASE_FILE)
         # todo : check database integrity
 
@@ -64,5 +65,8 @@ class SystemExpert:
     def process(self, uuid: str):
         pass
 
-    def get_facts(self, uuid: str) -> Set[Fact_tuple]:
+    def get_facts(self, uuid: str) -> FrozenSet[Fact_tuple]:
+        pass
+
+    def get_rules(self, user_uuid: str) -> FrozenSet[Rule_tuple]:
         pass
