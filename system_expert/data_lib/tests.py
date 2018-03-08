@@ -28,6 +28,7 @@ class TestDataManager(unittest.TestCase):
         )
 
     def test_add_fact(self):
+        # todo : test returned value of get_fact
         self.data_manager.add_fact("test_user", "fact", "val", True)
         self.assertEqual(
             ('fact', 'val', 1, 'str', 'test_user'),
@@ -36,3 +37,12 @@ class TestDataManager(unittest.TestCase):
                 (self.data_manager._get_user_id('test_user'),)
             ).fetchone()
         )
+
+    def test_get_fact(self):
+        # Assumes that add_fact works
+        fact_id = self.data_manager.add_fact("test_user", "fact", 42, True)
+        self.assertEqual(
+            ("fact", 42, True),
+            self.data_manager.get_fact("test_user", fact_id)
+        )
+

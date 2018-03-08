@@ -35,3 +35,12 @@ class TestSystemExpert(unittest.TestCase):
             ('fact', '42', 0, 'int', self.system_expert.data_manager._get_user_id(user_uuid)),
             fact_data
         )
+
+    def test_get_fact(self):
+        # Assumes that add_fact and create_user works
+        user_uuid = self.system_expert.create_user()
+        fact_id = self.system_expert.add_fact(user_uuid, "fact", 42, True)
+        self.assertEqual(
+            ("fact", 42, True),
+            self.system_expert.get_fact(user_uuid, fact_id)
+        )

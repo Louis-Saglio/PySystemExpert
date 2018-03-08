@@ -1,6 +1,6 @@
 import os
 import sqlite3
-from typing import Hashable
+from typing import Hashable, Tuple
 
 CREATE_DB_SCRIPT = os.path.join(os.path.dirname(__file__), 'create_db.sql')
 
@@ -46,8 +46,11 @@ class DataManager:
     def get_used_user_uuids(self) -> set:
         return {uuid[0] for uuid in self.connexion.execute("SELECT uuid FROM users").fetchall()}
 
-    def get_fact(self, user_uuid: str, fact_id: int):
-        return self.connexion.execute(
+    def get_fact(self, user_uuid: str, fact_id: int) -> Tuple[str, Hashable, bool]:
+        fact_data = self.connexion.execute(
             "SELECT name, value, state, type FROM facts WHERE id = ? AND user_id = ?",
-            (fact_id, user_uuid)
+            (fact_id, self._get_user_id(user_uuid))
         ).fetchone()
+        fact_value = __builtins__.get(fact_data[3])(fact_data[1])
+        # todo : value type must be builtin, remplace Hashable by ...
+        return fact_data[0], fact_value, fact_data[2]
