@@ -1,10 +1,10 @@
-from typing import Any, FrozenSet
+from typing import Any, FrozenSet, Hashable
 from exceptions import BadFactField
 
 
 """
-Les méthodes des classes bean ne doivent surtout pas interagir avec un objet externe,
-à moins que cette objet ne soit instancié à l'intérieur de l'une de ces méthodes.
+Les méthodes des classes bean ne doivent pas interagir avec un objet externe pour être totalement découplées.
+Les méthodes des classes bean ne doivent pas modifier leurs propres attributs pour être thread safe
 Les attributs publics d'un objet bean ne doivent contenir que des données spécifiques à la classe de cette objet.
 Des attributs privés peuvent être utilisés en tant que variable helper.
 """
@@ -15,7 +15,7 @@ class Fact:
     Class bean destiner à modéliser un fait
     """
 
-    def __init__(self, name: str, value: Any, state: bool, check: bool=False):
+    def __init__(self, name: str, value: Hashable, state: bool, check: bool=False):
         self.VALUE = value
         self.NAME = name
         self.STATE = state
@@ -41,6 +41,8 @@ class Fact:
         return Fact(self.NAME, self.VALUE, not self.STATE)
 
     def _check_fields(self):
+        # todo : unused
+        # todo : check if state is Hashable
         if not isinstance(self.NAME, str):
             raise BadFactField(f"self.NAME class must be str, not {self.NAME.__class__.__name__}")
         if not isinstance(self.STATE, bool):
