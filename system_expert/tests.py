@@ -44,3 +44,31 @@ class TestSystemExpert(unittest.TestCase):
             ("fact", 42, True),
             self.system_expert.get_fact(user_uuid, fact_id)
         )
+
+    def test_add_rule(self):
+        # Assumes that add_fact and create_user works
+        user_uuid = self.system_expert.create_user()
+        majors = (
+            self.system_expert.add_fact(user_uuid, "fact1", 15, True),
+            self.system_expert.add_fact(user_uuid, "fact2", b"val", False)
+        )
+        conclusions = (self.system_expert.add_fact(user_uuid, "fact2", 0.77, True),)
+
+        rule_id = self.system_expert.add_rule(user_uuid, majors, conclusions)
+
+        expected_rule_id = self.system_expert.data_manager.connexion.execute(
+            "SELECT id FROM rules WHERE id = ?",
+            (rule_id,)
+        ).fetchone()[0]
+        expected_majors = self.system_expert.data_manager.connexion.execute(
+            "SELECT fact_id FROM majors WHERE rule_id = ?",
+            (rule_id,)
+        ).fetchall()
+        expected_conclusion_id = self.system_expert.data_manager.connexion.execute(
+            "SELECT fact_id FROM conclusions WHERE rule_id = ?",
+            (rule_id,)
+        ).fetchone()[0]
+
+        self.assertEqual(expected_rule_id, rule_id)
+        self.assertEqual(expected_majors, [(majors[0],), (majors[1],)])
+        self.assertEqual(expected_conclusion_id, conclusions[0])

@@ -59,8 +59,8 @@ class SystemExpert:
     def get_fact(self, user_uuid: str, fact_id: int):
         return self.data_manager.get_fact(user_uuid, fact_id)
 
-    def add_rule(self, uuid: str, majors: Iterable[Fact_tuple], conclusions: Iterable[Fact_tuple]):
-        pass
+    def add_rule(self, user_uuid: str, majors: Iterable[int], conclusions: Iterable[int]) -> int:
+        return self.data_manager.add_rule(user_uuid, majors, conclusions)
 
     def process(self, uuid: str):
         pass
