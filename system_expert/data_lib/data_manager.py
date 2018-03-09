@@ -1,6 +1,6 @@
 import os
 import sqlite3
-from typing import Hashable, Tuple
+from typing import Hashable, Tuple, Iterable
 
 CREATE_DB_SCRIPT = os.path.join(os.path.dirname(__file__), 'create_db.sql')
 
@@ -54,3 +54,28 @@ class DataManager:
         fact_value = __builtins__.get(fact_data[3])(fact_data[1])
         # todo : value type must be builtin, remplace Hashable by ...
         return fact_data[0], fact_value, fact_data[2]
+
+    def add_rule(self, user_uuid: str, majors: Iterable[int], conclusions: Iterable[int]) -> int:
+        """
+        :param user_uuid: self explanatory
+        :param majors: an iterable of fact id
+        :param conclusions: an iterable of fact id
+        :return: the rule id
+        """
+        rule_id = self.connexion.execute(
+            'INSERT INTO rules (user_id) VALUES (?)',
+            (self._get_user_id(user_uuid),)
+        ).lastrowid
+        # todo : check if majors and conclusions exist on this user
+        for major in majors:
+            self.connexion.execute(
+                "INSERT INTO majors (fact_id, rule_id) VALUES (?,?)",
+                (major, rule_id)
+            )
+        for conclusion in conclusions:
+            self.connexion.execute(
+                "INSERT INTO conclusions (fact_id, rule_id) VALUES (?,?)",
+                (conclusion, rule_id)
+            )
+        self.connexion.commit()
+        return rule_id

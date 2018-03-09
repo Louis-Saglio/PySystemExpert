@@ -46,3 +46,26 @@ class TestDataManager(unittest.TestCase):
             self.data_manager.get_fact("test_user", fact_id)
         )
 
+    def test_add_rule(self):
+        # Assumes that add_facts works
+        # Assumes that a test_user is created
+        majors = (
+            self.data_manager.add_fact("test_user", "fact1", 15, True),
+            self.data_manager.add_fact("test_user", "fact2", b"val", False)
+        )
+        conclusions = (
+            self.data_manager.add_fact("test_user", "fact2", 0.77, True),
+        )
+        rule_id = self.data_manager.add_rule("test_user", majors, conclusions)
+        expected_rule = self.data_manager.connexion.execute("SELECT id, user_id FROM rules WHERE id = ?", (rule_id,)).fetchone()
+        expected_majors = self.data_manager.connexion.execute("SELECT fact_id FROM majors WHERE rule_id = ?", (rule_id,)).fetchall()
+        expected_conclusion = self.data_manager.connexion.execute("SELECT fact_id FROM conclusions WHERE rule_id = ?", (rule_id,)).fetchone()[0]
+        self.assertEqual(
+            expected_rule,
+            (rule_id, self.data_manager._get_user_id("test_user"))
+        )
+        self.assertEqual(
+            expected_majors,
+            [(majors[0],), (majors[1],)]
+        )
+        self.assertEqual(expected_conclusion, conclusions[0])
