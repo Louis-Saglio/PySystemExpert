@@ -20,9 +20,11 @@ class SystemExpert:
     C) Chaque instance gère plusieurs utilisateurs.
     D) Plusieures connexions à un même compte utilisateur sont acceptées.
     E) Un utilisateur ne peut pas accèder aux données d'un autre utilisateur.
+    F) Il n'y a qu'une base de donnée
     Donc :
     L'accès au données est asynchrone est par conséquent doit être controllé.
     Chaque requête envoyée au SE doit préciser l'utilisateur.
+    Chaque entrée doit être vérifiée
 
 
     Setter methods (add_fact, add_rule) accept parameters of builtin types.
@@ -65,8 +67,8 @@ class SystemExpert:
     def process(self, uuid: str):
         pass
 
-    def get_facts(self, uuid: str) -> FrozenSet[Fact_tuple]:
-        pass
+    def get_facts(self, user_uuid: str) -> Set[Fact_tuple]:
+        return self.data_manager.get_facts(user_uuid)
 
     def get_rules(self, user_uuid: str) -> FrozenSet[Rule_tuple]:
         pass

@@ -72,3 +72,14 @@ class TestSystemExpert(unittest.TestCase):
         self.assertEqual(expected_rule_id, rule_id)
         self.assertEqual(expected_majors, [(majors[0],), (majors[1],)])
         self.assertEqual(expected_conclusion_id, conclusions[0])
+
+    def test_get_facts(self):
+        # Assumes that add_fact works
+        # Assumes that DataManager.get_facts works
+        user_uuid = self.system_expert.create_user()
+        self.system_expert.add_fact(user_uuid, 'name1', 42, False)
+        self.system_expert.add_fact(user_uuid, 'name2', 0.42, True)
+        self.assertEqual(
+            self.system_expert.data_manager.get_facts(user_uuid),
+            self.system_expert.get_facts(user_uuid)
+        )
