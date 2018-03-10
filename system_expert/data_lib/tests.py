@@ -48,7 +48,7 @@ class TestDataManager(unittest.TestCase):
 
     def test_add_rule(self):
         # Assumes that add_facts works
-        # Assumes that a test_user is created
+        # Assumes that test_user is created
         majors = (
             self.data_manager.add_fact("test_user", "fact1", 15, True),
             self.data_manager.add_fact("test_user", "fact2", b"val", False)
@@ -69,3 +69,20 @@ class TestDataManager(unittest.TestCase):
             [(majors[0],), (majors[1],)]
         )
         self.assertEqual(expected_conclusion, conclusions[0])
+
+    def test__build_fact_from_row_data(self):
+        self.assertEqual(
+            ("Name", 42, False),
+            (self.data_manager._build_fact_from_raw_data(("Name", "42", False, "int")))
+        )
+
+    def test_get_facts(self):
+        # Assumes that add_fact works
+        # Assumes that test_user is created
+        self.data_manager.add_fact('test_user', 'name', 42, True)
+        self.data_manager.add_fact('test_user', 'name2', b"abc", False)
+        facts = self.data_manager.get_facts('test_user')
+        self.assertEqual(
+            {('name', 42, True), ('name2', b"abc", False)},
+            facts
+        )

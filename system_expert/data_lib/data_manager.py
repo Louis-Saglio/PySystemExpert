@@ -1,6 +1,6 @@
 import os
 import sqlite3
-from typing import Hashable, Tuple, Iterable
+from typing import Hashable, Tuple, Iterable, Set, Union
 
 CREATE_DB_SCRIPT = os.path.join(os.path.dirname(__file__), 'create_db.sql')
 
@@ -46,14 +46,25 @@ class DataManager:
     def get_used_user_uuids(self) -> set:
         return {uuid[0] for uuid in self.connexion.execute("SELECT uuid FROM users").fetchall()}
 
+    @staticmethod
+    def _build_fact_from_raw_data(raw_data: Tuple[str, str, bool, str]):
+        # todo : value type must be builtin, remplace Hashable by ...
+        fact_value = __builtins__.get(raw_data[3])(raw_data[1])
+        return raw_data[0], fact_value, raw_data[2]
+
     def get_fact(self, user_uuid: str, fact_id: int) -> Tuple[str, Hashable, bool]:
-        fact_data = self.connexion.execute(
+        fact_raw_data = self.connexion.execute(
             "SELECT name, value, state, type FROM facts WHERE id = ? AND user_id = ?",
             (fact_id, self._get_user_id(user_uuid))
         ).fetchone()
-        fact_value = __builtins__.get(fact_data[3])(fact_data[1])
-        # todo : value type must be builtin, remplace Hashable by ...
-        return fact_data[0], fact_value, fact_data[2]
+        return self._build_fact_from_raw_data(fact_raw_data)
+
+    def get_facts(self, user_uuid: str) -> Set[Tuple[str, Hashable, bool]]:
+        facts_raw_data = self.connexion.execute(
+            "SELECT name, value, state, type FROM facts WHERE user_id = ?",
+            (self._get_user_id(user_uuid),)
+        ).fetchall()
+        return {self._build_fact_from_raw_data(row_data) for row_data in facts_raw_data}
 
     def add_rule(self, user_uuid: str, majors: Iterable[int], conclusions: Iterable[int]) -> int:
         """
